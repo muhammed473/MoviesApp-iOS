@@ -11,7 +11,15 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+       
+        
+        if NetworkScreen.shared.isConnected{
+            print("Bağlandım len")
+        }
+        else{
+            print("Bağlanamadım.") // Uyarı mesajlarını yazıcam.
+        }
+        
     }
 
 
