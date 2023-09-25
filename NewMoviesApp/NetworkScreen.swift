@@ -69,7 +69,7 @@ final class NetworkScreen  {
             
              */
             
-            print(self?.isConnected ?? "N/A")
+            // print(self?.isConnected ?? "N/A")
         }
         
     }
