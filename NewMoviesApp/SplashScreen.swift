@@ -9,10 +9,13 @@ import UIKit
 
 class SplashScreen: UIViewController {
     
+    var timer = Timer()
+    var counter = 0
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        counter = 3
         view.backgroundColor = .red
         
         if NetworkScreen.shared.isConnected{
@@ -26,6 +29,13 @@ class SplashScreen: UIViewController {
             // Uyarı ve sonraki sayfa(AnaSayfaya Geçilmicek )
         }
         
+        view.addSubview(myLodosLabel)
+        
+        LabelConstraintAndDefaultValue()
+        fetchRemoteConfig()
+        GetRemoteValue()
+        
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(counterStart), userInfo: nil, repeats: true)
     }
     
     
@@ -50,5 +60,59 @@ class SplashScreen: UIViewController {
         
     }
     
+    
+    private let myLodosLabel : UILabel = {
+        
+        let lodosLabel = UILabel()
+        lodosLabel.font =  UIFont.systemFont(ofSize: 30,weight: .bold)
+        lodosLabel.translatesAutoresizingMaskIntoConstraints = false
+         return lodosLabel
+    }()
+    
+    
+    private func LabelConstraintAndDefaultValue() {
+        myLodosLabel.text = "Mika"
+        myLodosLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        myLodosLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
+    }
+    
+    func fetchRemoteConfig(){
+        
+        remoteConfig.fetch(withExpirationDuration: 3) {
+            
+            [unowned self]
+            (state,error) in
+            
+            guard error == nil else {return}
+            print("Değeri Remote Config 'ten al.")
+            remoteConfig.activate()
+            self.GetRemoteValue()
+            
+        }
+       
+    }
+    
+    func  GetRemoteValue() {
+        
+     
+        let newLabel = remoteConfig.configValue(forKey: "myCase").stringValue ?? ""
+        myLodosLabel.text = newLabel
+       
+    }
+    
+ @objc func counterStart() {
+        
+    
+        counter -= 1
+        
+        if counter == 0 {
+            timer.invalidate() // Timer  durduruldu.
+            print("ŞİMDİ ANA SAYFAYA GEÇEBİLİRSİN.")
+            
+        
+        }
+        
+    }
     
 }
