@@ -23,8 +23,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let splashScreen = SplashScreen()
         splashScreen.title = "Hoşgeldiniz"
         
-        let naviVC = UINavigationController(rootViewController: splashScreen)
-        window?.rootViewController = naviVC
+        let homePageScreen = SplashScreen()
+        splashScreen.title = "AnaSayfa"
+        homePageScreen.restorationIdentifier
+      
+        
+       // let naviVC = UINavigationController(rootViewController: splashScreen)
+        
+        let navi = UINavigationController()
+        navi.setViewControllers([HomePageController(),splashScreen], animated: true)
+        
+      //  window?.rootViewController = naviVC
+        window?.rootViewController = navi
         window?.makeKeyAndVisible()
          
         

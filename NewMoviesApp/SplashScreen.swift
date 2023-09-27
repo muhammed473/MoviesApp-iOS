@@ -12,16 +12,24 @@ class SplashScreen: UIViewController {
     var timer = Timer()
     var counter = 0
    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         counter = 3
         view.backgroundColor = .red
         
+      
         if NetworkScreen.shared.isConnected{
             print("Bağlandım len..")
             
             // Firebase remote config 'ten gelen Lodos Texti
+            
+            
+            fetchRemoteConfig()
+            GetRemoteValue()
+            
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(counterStart), userInfo: nil, repeats: true)
         }
         else{
             alertShow()
@@ -30,12 +38,8 @@ class SplashScreen: UIViewController {
         }
         
         view.addSubview(myLodosLabel)
-        
         LabelConstraintAndDefaultValue()
-        fetchRemoteConfig()
-        GetRemoteValue()
-        
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(counterStart), userInfo: nil, repeats: true)
+       
     }
     
     
@@ -71,15 +75,16 @@ class SplashScreen: UIViewController {
     
     
     private func LabelConstraintAndDefaultValue() {
-        myLodosLabel.text = "Mika"
+        myLodosLabel.text = ""
         myLodosLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         myLodosLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
     }
     
+    
     func fetchRemoteConfig(){
         
-        remoteConfig.fetch(withExpirationDuration: 3) {
+        remoteConfig.fetch(withExpirationDuration: 1) {
             
             [unowned self]
             (state,error) in
@@ -93,6 +98,7 @@ class SplashScreen: UIViewController {
        
     }
     
+    
     func  GetRemoteValue() {
         
      
@@ -101,7 +107,8 @@ class SplashScreen: UIViewController {
        
     }
     
- @objc func counterStart() {
+    
+    @objc func counterStart() {
         
     
         counter -= 1
@@ -110,9 +117,22 @@ class SplashScreen: UIViewController {
             timer.invalidate() // Timer  durduruldu.
             print("ŞİMDİ ANA SAYFAYA GEÇEBİLİRSİN.")
             
+         
+        let a = HomePageController()
+          
+          
+            navigationController?.pushViewController(a, animated: true)
         
         }
         
     }
+    
+   
+    
+    
+   
+    
+    
+    
     
 }
