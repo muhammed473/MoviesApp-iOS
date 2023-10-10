@@ -101,7 +101,6 @@ class SplashScreen: UIViewController {
     
     func  GetRemoteValue() {
         
-     
         let newLabel = remoteConfig.configValue(forKey: "myCase").stringValue ?? ""
         myLodosLabel.text = newLabel
        
@@ -110,29 +109,25 @@ class SplashScreen: UIViewController {
     
     @objc func counterStart() {
         
-    
+        
         counter -= 1
         
         if counter == 0 {
             timer.invalidate() // Timer  durduruldu.
             print("ŞİMDİ ANA SAYFAYA GEÇEBİLİRSİN.")
             
-         
-        let a = HomePageController()
-          
-          
-            navigationController?.pushViewController(a, animated: true)
-        
+            
+            /*  let homePageScreen = HomePageScreen()
+             
+             navigationController?.pushViewController(homePageScreen, animated: true)
+             } */
+            
+            let newHomeScreen = NewHomeScreen()
+            navigationController?.pushViewController(newHomeScreen, animated: true)
+            
         }
         
     }
-    
-   
-    
-    
-   
-    
-    
     
     
 }
