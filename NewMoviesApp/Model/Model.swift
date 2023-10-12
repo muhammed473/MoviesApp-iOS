@@ -11,7 +11,7 @@ import Foundation
 // Encodable : İlgili sınıf, nesnelerini JSON FORMATINA dönüştürür.
 // Codable   : Hem Decodable hemde Encodable 'dır.
 
-struct DataMovies: Decodable {
+struct DataMovies: Codable {
     
     let movies : [MovieModel]
     
@@ -22,7 +22,7 @@ struct DataMovies: Decodable {
     
 }
 
-struct MovieModel : Decodable {
+struct MovieModel : Codable {
     
     let title : String?
     let year : String?
@@ -33,7 +33,7 @@ struct MovieModel : Decodable {
                         CodingKey ( Kodlama Anahtarı ) :
      
      - Kullandığım API'nın yapısı İSİMLENDİRME PRENSİPLERİME UYMAYAN İSİM'lere sahipse modelin isimleride öyle olmak
-       zorunda kalır. Buda kodun kaitesini düşürür.Bunun olmaması için CodingKey 'i kullanırız.
+       zorunda kalır. Buda kodun kalitesini düşürür.Bunun olmaması için CodingKey 'i kullanırız.
      - Decodable ve Encodable yapmada anahtar olarak olarak kullanılan bir türdür.
      - Modellerimizin özelliklerini değiştirmemizi sağlar.
     

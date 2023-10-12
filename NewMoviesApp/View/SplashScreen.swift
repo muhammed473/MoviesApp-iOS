@@ -42,7 +42,7 @@ class SplashScreen: UIViewController {
        
     }
     
-    
+   
     private func alertShow() {
         
         print("Bağlanamadım.")
@@ -128,6 +128,7 @@ class SplashScreen: UIViewController {
         }
         
     }
+    
     
     
 }

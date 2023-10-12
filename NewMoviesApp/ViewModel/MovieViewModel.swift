@@ -10,7 +10,8 @@ import Foundation
 class MovieViewModel{
     
     private var apiService = ApiService()
-    private var popularMovies = [MovieModel]()
+     var popularMovies = [MovieModel]()
+  
     
     
     func fetchPopularMoviesData(completion: @escaping () -> Void ) {
@@ -45,7 +46,10 @@ class MovieViewModel{
     
     func cellForRowAt (indexPath : IndexPath) -> MovieModel {
         
-        return popularMovies[indexPath.row]
+        
+         return popularMovies[indexPath.row]
+        
+      
     }
     
     
