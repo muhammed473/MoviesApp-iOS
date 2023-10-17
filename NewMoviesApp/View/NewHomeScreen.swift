@@ -9,13 +9,14 @@ import UIKit
 
 class NewHomeScreen: UIViewController {
     
-    // var apiService = ApiService()
-    
-    private var viewModel = MovieViewModel()
-    
+   
     var isSearch = false
     var searchResultList = [MovieModel]()
    
+    var apiService = ApiService()
+    var movieDataList : [MovieModel] = []
+   
+    private var dataTask : URLSessionDataTask?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +33,12 @@ class NewHomeScreen: UIViewController {
          
          } */
         
+        getMovies()
+        
         mySearchBar.delegate = self
-       
+        mytableView.delegate = self
+        mytableView.dataSource = self
+        
         view.backgroundColor = .blue
         print("Şuanda 2 'inci YENİ ekrandayım.")
         
@@ -46,7 +51,7 @@ class NewHomeScreen: UIViewController {
         tableViewConstraint()
         searchBarConstraint()
         
-        loadingMoviesData()
+        mytableView.reloadData()
         
     }
     
@@ -110,31 +115,98 @@ class NewHomeScreen: UIViewController {
         
     }
     
+ 
     
-    private func loadingMoviesData(  ) {
+    private func getMovies( ) {
         
-        viewModel.fetchPopularMoviesData { [weak self] in
+     /*   apiService.getPopularMoviesData {
             
-            self?.mytableView.dataSource = self
-            self?.mytableView.delegate = self
-            self?.mytableView.reloadData()
+            [weak self]  (result) in
+            
+        switch result {
+                
+            case .success(let listem):
+                self?.searchResultList = listem.movies!
+               
+            
+           case .failure(let error):
+               print("Hata oluştu.\(error)")
+                
+                
         }
-    }
-    
-    
-   /* func AramaYap ( currentSearchText:String){
+            
+            */
         
+        let popularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1"
+        
+        
+        guard let url = URL(string: popularMoviesUrl) else {return}
+        
+        dataTask = URLSession.shared.dataTask(with: url)
+        {
+            
+            (data,response,error) in
+            
+            // Handle Error : HATA var mı kontrol ettik.
+            if let error = error {
+                
+                print("Veri Görevi ( DataTask ) hatası : \(error.localizedDescription)")
+                return
+            }
+            
+            
+            // Handle Empty Response : Boş YANIT var mı kontrol ettik.
+            guard let response = response as? HTTPURLResponse else {
+                print ("Yanıt(CEVAP) BOŞ")
+                return
+            }
+            print("Yanıt durum kodu : \(response.statusCode)")
+            
+            
+            // Handle Empty Data = Boş DATA var mı kontrol ettik.
+            guard let data = data  else{
+                print("Veri Boş.")
+                return
+            }
+            
+            // Parse the data = Verileri DÜZENLİCEZ(Parse) ŞİMDİ :
+            do{
+                
+                let decoder = JSONDecoder()
+               let DataList = try decoder.decode(DataMovies.self, from: data)
+                self.movieDataList = DataList.movies!
+               
+                DispatchQueue.main.async {
+                    self.movieDataList
+                
+                }
+                
+            } catch let error{
+               print(error)
+                
+            }
+            
+        }
+        
+        dataTask?.resume()
+        
+    }
+        
+    
+    func AramaYap ( currentSearchText:String){
+        
+       
         var request = URLRequest(url: URL(string: "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1")!)
      
         
         request.httpMethod = "POST"
         
-        let postString = "Movie = \(currentSearchText)"
+        let postString = "Movie=\(currentSearchText)"
         
         request.httpBody = postString.data(using: .utf8)
         
         URLSession.shared.dataTask(with: request)
-        {
+        { [self]
             (data,response,error) in
             
             if error != nil || data == nil{
@@ -145,60 +217,94 @@ class NewHomeScreen: UIViewController {
             do{
                 
                 let movieList = try JSONDecoder().decode(DataMovies.self,from: data!)
+
+                self.searchResultList = movieList.movies!
                 
-                self.searchResultList = movieList.movies
-                    
-                
-                
+                self.searchResultList.filter({
+                    ($0.title?.lowercased().prefix(currentSearchText.count))! == currentSearchText.lowercased()
+                })
+              
                 DispatchQueue.main.async {
-                    self.mytableView.reloadData()
+                    self.searchResultList
                 }
-                
-                
+                       
             }catch{
                 print(error.localizedDescription)
             }
             
         }.resume()
         
-    } */
+    }
+    
     
 }
+    
+  
+extension NewHomeScreen: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+      /*  if searchText == ""{
+            isSearch = false
+        }
+        else {
+            isSearch = true
+            AramaYap(currentSearchText: searchText)
+        } */
+      
+      
+        searchResultList = movieDataList.filter({ (s : MovieModel)
+            -> Bool in
+        
+            return s.title!.lowercased().contains(searchText.lowercased())
+        })
+      
+        isSearch = true
+        mytableView.reloadData()
+        
+    
+    }
+    
+    func searchBarIsEmpty() -> Bool {
+        
+        return mySearchBar.text?.isEmpty ?? true
+    }
+    
+}
+
+
 
 extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if isSearch{
+       
+        //    return searchResultList.count
+        
+        if !searchBarIsEmpty() {
             return searchResultList.count
         }
+        else{
+            return movieDataList.count
+        }
         
-        return viewModel.numberOfRowsInSection(section: section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+    
+       // let movie = searchResultList[indexPath.row]
         
          let cell = tableView.dequeueReusableCell(withIdentifier: MyTableViewCell.tableIdentifier, for: indexPath) as! MyTableViewCell
         
-       if isSearch{
-            
-           
-            var content = cell.defaultContentConfiguration()
-            content.text = viewModel.cellForRowAt(indexPath: indexPath).title
-            cell.contentConfiguration = content
-       
-       
+        if !searchBarIsEmpty() {
+            cell.movieTitleLabel.text = searchResultList[indexPath.row].title
         }
         else {
-           
-            let movie = viewModel.cellForRowAt(indexPath: indexPath)
-               
-            cell.setCellWithValuesOf(movie)
-
+            cell.movieTitleLabel.text = movieDataList[indexPath.row].title
         }
-      
-        
+     
+      //  cell.movieTitleLabel.text =  movie.title
+           
         return cell
         
     }
@@ -212,34 +318,15 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
         }
         
         else{
-            print("Choose Movie(Seçilen Film) : \(viewModel.popularMovies[indexPath.row]) ")
+            
             
         }
     }
     
     
-   
-    
 }
 
-extension NewHomeScreen : UISearchBarDelegate {
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-        print("Şuan arama yapılıyor.")
-       
-        
-        if searchText == ""
-        {
-            isSearch = false
-        }
-        else {
-            isSearch = true
-            searchResultList = viewModel.popularMovies.filter( {$0.title?.lowercased().prefix(searchText.count) ?? "empty" == searchText.lowercased() })
-           
-        }
-        
-        mytableView.reloadData()
-        
-    }
-}
+
+
+
+

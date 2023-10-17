@@ -10,7 +10,7 @@ import UIKit
 class MyTableViewCell: UITableViewCell {
 
     static let tableIdentifier = "myCell"
-    
+   
     private var urlString : String = ""
     
     let movieTitleLabel : UILabel = {
@@ -47,14 +47,19 @@ class MyTableViewCell: UITableViewCell {
     }
     
     func setCellWithValuesOf(_ movie:MovieModel){
-        cellUpdate(title: movie.title!)
+        
+    cellUpdate(title: movie.title!)
+        
     }
     
     private func cellUpdate(title : String ) {
         
         self.movieTitleLabel.text = title
+    
     }
    
+   
+  
     
     
 

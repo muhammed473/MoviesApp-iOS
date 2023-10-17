@@ -13,7 +13,7 @@ import Foundation
 
 struct DataMovies: Codable {
     
-    let movies : [MovieModel]
+    let movies : [MovieModel]?
     
     private enum CodingKeys: String,CodingKey{
         
