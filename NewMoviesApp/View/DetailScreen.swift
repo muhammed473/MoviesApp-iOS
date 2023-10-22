@@ -12,7 +12,7 @@ class DetailScreen: UIViewController {
     private let myImageView: UIImageView = {
         let viewImage = UIImageView()
         viewImage.translatesAutoresizingMaskIntoConstraints = false
-        viewImage.image = UIImage(named: "Avatar")
+        //viewImage.image = UIImage()
       
         return viewImage
     }()
@@ -23,10 +23,17 @@ class DetailScreen: UIViewController {
         myLabelim.translatesAutoresizingMaskIntoConstraints = false
          return myLabelim
     }()
+    private let myLabelYear : UILabel = {
+        
+        let myLabelim = UILabel()
+        myLabelim.font =  UIFont.systemFont(ofSize: 30,weight: .bold)
+        myLabelim.translatesAutoresizingMaskIntoConstraints = false
+         return myLabelim
+    }()
     
     var newHomeScreen = NewHomeScreen()
     var detailScreenForModel : MovieModel?
-   
+    private var dataTask : URLSessionDataTask?
    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,28 +41,51 @@ class DetailScreen: UIViewController {
         print("Şuanda Film Detay ekranındayım.")
         view.backgroundColor = .systemBlue
         
-       /* newhome.getDetail {
-            (detailmodel) in
-            
-            print("ÇALIŞTI.")
-            self.myLabel.text = self.newhome.currentMovieDetailList[0].title
-            
-        } */
-      
+    
         navigationItem.title = "DetailScreen"
+        
         view.addSubview(myImageView)
         setUpImageViewConstraint()
         
         view.addSubview(myLabel)
         LabelConstraintAndDefaultValue()
         
-      //  guard let detailmodels = detailmodels else {return}
-        myLabel.text = self.detailScreenForModel?.title
-       
+        view.addSubview(myLabelYear)
+        LabelYearConstraintAndDefaultValue()
     
+        myLabel.text = self.detailScreenForModel?.title
+        myLabelYear.text = "MOVİE YEAR : \(self.detailScreenForModel!.year!)"
+        /* NOT :
+         
+         https://medium.com/swlh/loading-images-from-url-in-swift-2bf8b9db266
+         BU ADRESTEN Api'deki bir resmi nasıl kendi ekranımızda görüntüleyeceğimizi ANLADIN. Böyle
+         bir şeyle karşılaştığında bu adrese gidip hatırlayabilirsin.
+         
+         */
+        
+        // poster_path":"/mOX5O6JjCUWtlYp5D8wajuQRVgy.jpg
+        
+     
     }
     
-  
+    func getImageFromApi(from url:String) { // BU HALDE KALSIN SONRA İLERDE ÇALIŞAN KODLARI BU METOD ÜZERİNDE DEĞİŞTİRİRSİN ! ! !
+        
+        guard let comeImageUrl = URL(string: url) else {return}
+        
+        DispatchQueue.global().async {
+            
+            guard let myImageData = try? Data(contentsOf: comeImageUrl) else {return}
+            let myImage = UIImage(data: myImageData)
+            
+            DispatchQueue.main.async {
+                
+            
+                self.myImageView.image = myImage
+            }
+        }
+        
+        
+    } 
     
     private func setUpImageViewConstraint(){
  
@@ -73,25 +103,13 @@ class DetailScreen: UIViewController {
         
     }
     
-    
-   /* func getImage() {
+    private func LabelYearConstraintAndDefaultValue() {
+    //    myLabel.text = "Selam"
+        myLabelYear.centerXAnchor.constraint(equalTo: view.centerXAnchor,constant: 30).isActive = true
+        myLabelYear.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: 30).isActive = true
         
-        if let movie = movie {
-            if let urlImage = URL(string: "https://api.themoviedb.org/3/movie/results/poster_path/\(movie.real_image)") {
-                
-                DispatchQueue.global().async {
-                    
-                    let data = try? Data(contentsOf: urlImage)
-                    
-                    DispatchQueue.main.async {
-                      
-                        self.myImageView.image = UIImage(data: data!)
-                    }
-                }
-            }
-        }
-       
-    } */
+    }
+ 
     
 
 }

@@ -29,6 +29,7 @@ struct MovieModel : Codable {
     let year : String?
     let rate : Double?
     let overview : String?
+    let poster : String?
   
     /*
                         CodingKey ( Kodlama Anahtarı ) :
@@ -44,6 +45,7 @@ struct MovieModel : Codable {
         case title,overview,id
         case year = "release_date" // yayın tarihi
         case rate = "vote_average" // Oy ortalaması
+        case poster = "poster_path"
        
     }
     

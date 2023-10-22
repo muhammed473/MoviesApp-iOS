@@ -35,9 +35,7 @@ class NewHomeScreen: UIViewController {
          } */
         
         getMovies()
-        // fetchDetail()
        
-        
         mySearchBar.delegate = self
         mytableView.delegate = self
         mytableView.dataSource = self
@@ -177,12 +175,7 @@ class NewHomeScreen: UIViewController {
                 let DataList = try decoder.decode(DataMovies.self, from: data)
                 self.movieDataList = DataList.movies!
                 
-                /*  print("İlgili resmin urlsi : \(movieDataList.contains(where: <#T##(MovieModel) throws -> Bool#>))") */
-                
-                /*   DispatchQueue.main.async {
-                 self.movieDataList
-                 
-                 } */
+              
                 
             } catch let error{
                 print(error)
