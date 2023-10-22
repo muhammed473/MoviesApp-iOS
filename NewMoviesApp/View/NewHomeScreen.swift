@@ -9,14 +9,15 @@ import UIKit
 
 class NewHomeScreen: UIViewController {
     
-   
+    
     var isSearch = false
     var searchResultList = [MovieModel]()
-   
-    var apiService = ApiService()
     var movieDataList : [MovieModel] = []
    
+   
+   
     private var dataTask : URLSessionDataTask?
+  
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +35,8 @@ class NewHomeScreen: UIViewController {
          } */
         
         getMovies()
+        // fetchDetail()
+       
         
         mySearchBar.delegate = self
         mytableView.delegate = self
@@ -55,7 +58,6 @@ class NewHomeScreen: UIViewController {
         
     }
     
-   
     
     private let mytableView : UITableView = {
         
@@ -74,8 +76,8 @@ class NewHomeScreen: UIViewController {
         mytableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 2).isActive = true
         mytableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 2).isActive = true
         mytableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 2).isActive = true
-       
-
+        
+        
     }
     
     
@@ -92,19 +94,19 @@ class NewHomeScreen: UIViewController {
         mySearchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 80).isActive = true
         mySearchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mySearchBar .trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-     //   mySearchText.bottomAnchor.constraint(equalTo: mytableView.topAnchor, constant: 2).isActive = true
+        //   mySearchText.bottomAnchor.constraint(equalTo: mytableView.topAnchor, constant: 2).isActive = true
         
     }
     
     private let ForLoadingActivityIndicator : UIActivityIndicatorView  = {
         
-       let myActiIndicator = UIActivityIndicatorView()
-      
-       myActiIndicator.translatesAutoresizingMaskIntoConstraints = false
-       myActiIndicator.color = .yellow
-       myActiIndicator.isHidden = false
-       myActiIndicator.startAnimating()
-      
+        let myActiIndicator = UIActivityIndicatorView()
+        
+        myActiIndicator.translatesAutoresizingMaskIntoConstraints = false
+        myActiIndicator.color = .yellow
+        myActiIndicator.isHidden = false
+        myActiIndicator.startAnimating()
+        
         return myActiIndicator
     }()
     
@@ -115,27 +117,26 @@ class NewHomeScreen: UIViewController {
         
     }
     
- 
     
     private func getMovies( ) {
         
-     /*   apiService.getPopularMoviesData {
-            
-            [weak self]  (result) in
-            
-        switch result {
-                
-            case .success(let listem):
-                self?.searchResultList = listem.movies!
-               
-            
-           case .failure(let error):
-               print("Hata oluştu.\(error)")
-                
-                
-        }
-            
-            */
+        /*   apiService.getPopularMoviesData {
+         
+         [weak self]  (result) in
+         
+         switch result {
+         
+         case .success(let listem):
+         self?.searchResultList = listem.movies!
+         
+         
+         case .failure(let error):
+         print("Hata oluştu.\(error)")
+         
+         
+         }
+         
+         */
         
         let popularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1"
         
@@ -173,16 +174,18 @@ class NewHomeScreen: UIViewController {
             do{
                 
                 let decoder = JSONDecoder()
-               let DataList = try decoder.decode(DataMovies.self, from: data)
+                let DataList = try decoder.decode(DataMovies.self, from: data)
                 self.movieDataList = DataList.movies!
-               
-                DispatchQueue.main.async {
-                    self.movieDataList
                 
-                }
+                /*  print("İlgili resmin urlsi : \(movieDataList.contains(where: <#T##(MovieModel) throws -> Bool#>))") */
+                
+                /*   DispatchQueue.main.async {
+                 self.movieDataList
+                 
+                 } */
                 
             } catch let error{
-               print(error)
+                print(error)
                 
             }
             
@@ -191,67 +194,14 @@ class NewHomeScreen: UIViewController {
         dataTask?.resume()
         
     }
-        
-    
-    func AramaYap ( currentSearchText:String){
-        
-       
-        var request = URLRequest(url: URL(string: "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1")!)
-     
-        
-        request.httpMethod = "POST"
-        
-        let postString = "Movie=\(currentSearchText)"
-        
-        request.httpBody = postString.data(using: .utf8)
-        
-        URLSession.shared.dataTask(with: request)
-        { [self]
-            (data,response,error) in
-            
-            if error != nil || data == nil{
-                print("Hata var")
-                return
-            }
-            
-            do{
-                
-                let movieList = try JSONDecoder().decode(DataMovies.self,from: data!)
-
-                self.searchResultList = movieList.movies!
-                
-                self.searchResultList.filter({
-                    ($0.title?.lowercased().prefix(currentSearchText.count))! == currentSearchText.lowercased()
-                })
-              
-                DispatchQueue.main.async {
-                    self.searchResultList
-                }
-                       
-            }catch{
-                print(error.localizedDescription)
-            }
-            
-        }.resume()
-        
-    }
-    
     
 }
-    
-  
+
+
 extension NewHomeScreen: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-      /*  if searchText == ""{
-            isSearch = false
-        }
-        else {
-            isSearch = true
-            AramaYap(currentSearchText: searchText)
-        } */
-      
+    
       
         searchResultList = movieDataList.filter({ (s : MovieModel)
             -> Bool in
@@ -273,7 +223,6 @@ extension NewHomeScreen: UISearchBarDelegate {
 }
 
 
-
 extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -292,8 +241,6 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
-       // let movie = searchResultList[indexPath.row]
-        
          let cell = tableView.dequeueReusableCell(withIdentifier: MyTableViewCell.tableIdentifier, for: indexPath) as! MyTableViewCell
         
         if !searchBarIsEmpty() {
@@ -303,8 +250,6 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
             cell.movieTitleLabel.text = movieDataList[indexPath.row].title
         }
      
-      //  cell.movieTitleLabel.text =  movie.title
-           
         return cell
         
     }
@@ -312,15 +257,25 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if isSearch {
-            print(" Search Result Choose Movie : \(searchResultList[indexPath.row])")
-            
+        print("Tıkladım")
+       
+     // fetchDetail()
+        
+        let detailScreen = DetailScreen()
+        
+        if !searchBarIsEmpty(){
+            detailScreen.detailScreenForModel = searchResultList[indexPath.row]
         }
         
-        else{
-            
-            
+        else {
+            detailScreen.detailScreenForModel = movieDataList[indexPath.row]
         }
+        
+        self.navigationController?.pushViewController(detailScreen, animated: true)
+        
+       
+   
+        
     }
     
     

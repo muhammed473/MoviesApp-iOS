@@ -24,6 +24,7 @@ struct DataMovies: Codable {
 
 struct MovieModel : Codable {
     
+    let id : Int?
     let title : String?
     let year : String?
     let rate : Double?
@@ -40,9 +41,10 @@ struct MovieModel : Codable {
     */
     private enum CodingKeys : String, CodingKey {
         
-        case title,overview
+        case title,overview,id
         case year = "release_date" // yayın tarihi
         case rate = "vote_average" // Oy ortalaması
+       
     }
     
 }

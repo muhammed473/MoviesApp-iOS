@@ -18,7 +18,7 @@ class MyTableViewCell: UITableViewCell {
     let label = UILabel()
     label.textColor = .black
     label.font = .systemFont(ofSize: 30,weight: .bold)
-    label.text = " naber"
+    label.text = " How Are You "
     label.translatesAutoresizingMaskIntoConstraints = false
     return label
 }()
