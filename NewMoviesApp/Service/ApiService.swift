@@ -11,7 +11,7 @@ class ApiService {
     
     private var dataTask : URLSessionDataTask?
     
-    func getPopularMoviesData(completion: @escaping (Result<DataMovies,Error>) -> Void ) {
+    func getPopularMoviesData(imdbID:String, completion: @escaping( DataMovies) -> Void ){
         
         let popularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1"
         
@@ -25,7 +25,7 @@ class ApiService {
             
             // Handle Error : HATA var mı kontrol ettik.
             if let error = error {
-                completion(.failure(error))
+               // completion(.failure(error))
                 print("Veri Görevi ( DataTask ) hatası : \(error.localizedDescription)")
                 return
             }
@@ -52,12 +52,8 @@ class ApiService {
                 let movieDataList = try decoder.decode(DataMovies.self, from: data)
                 
                
-                DispatchQueue.main.async {
-                    completion(.success(movieDataList))
-                }
-                
             } catch let error{
-                completion(.failure(error))
+                print("Error : \(error.localizedDescription)")
                 
             }
             

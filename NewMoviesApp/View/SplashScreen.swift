@@ -122,9 +122,12 @@ class SplashScreen: UIViewController {
              navigationController?.pushViewController(homePageScreen, animated: true)
              } */
             
-            let newHomeScreen = NewHomeScreen()
-            navigationController?.pushViewController(newHomeScreen, animated: true) 
+             let newHomeScreen = NewHomeScreen()
+            navigationController?.pushViewController(newHomeScreen, animated: true)
          
+            
+          
+            
          //   MyNavigationController().goNewHomeScreen()
         }
         

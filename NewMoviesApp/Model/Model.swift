@@ -13,7 +13,7 @@ import Foundation
 
 struct DataMovies: Codable {
     
-    let movies : [MovieModel]?
+    let movies : [MovieModel]
     
     private enum CodingKeys: String,CodingKey{
         
@@ -24,7 +24,7 @@ struct DataMovies: Codable {
 
 struct MovieModel : Codable {
     
-    let id : Int?
+    let imdbID : String?
     let title : String?
     let year : String?
     let rate : Double?
@@ -42,7 +42,7 @@ struct MovieModel : Codable {
     */
     private enum CodingKeys : String, CodingKey {
         
-        case title,overview,id
+        case title,overview,imdbID
         case year = "release_date" // yayın tarihi
         case rate = "vote_average" // Oy ortalaması
         case poster = "poster_path"

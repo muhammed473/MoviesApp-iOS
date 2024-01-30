@@ -23,6 +23,13 @@ class MyTableViewCell: UITableViewCell {
     return label
 }()
     
+    let moviePosterImage : UIImageView = {
+       
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        return image
+    }()
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         
@@ -38,7 +45,12 @@ class MyTableViewCell: UITableViewCell {
     private func setUpConstraint(){
         
         self.contentView.addSubview(movieTitleLabel)
-       
+        self.contentView.addSubview(moviePosterImage)
+        
+        moviePosterImage.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 10).isActive = true
+        moviePosterImage.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 0).isActive = true
+        moviePosterImage .trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: 0).isActive = true
+        
         movieTitleLabel.topAnchor.constraint(equalTo:self.contentView.topAnchor,constant: 2 ).isActive = true
         movieTitleLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor,constant: 2).isActive = true
         movieTitleLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: 2).isActive = true

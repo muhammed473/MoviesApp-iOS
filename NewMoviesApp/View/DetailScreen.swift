@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class DetailScreen: UIViewController {
 
@@ -34,14 +35,17 @@ class DetailScreen: UIViewController {
     var newHomeScreen = NewHomeScreen()
     var detailScreenForModel : MovieModel?
     private var dataTask : URLSessionDataTask?
+    var movieDataList : [MovieModel] = []
+    var newApiService  = NewApiService()
+    
    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         print("Şuanda Film Detay ekranındayım.")
         view.backgroundColor = .systemBlue
         
-    
+        
         navigationItem.title = "DetailScreen"
         
         view.addSubview(myImageView)
@@ -52,41 +56,70 @@ class DetailScreen: UIViewController {
         
         view.addSubview(myLabelYear)
         LabelYearConstraintAndDefaultValue()
-    
+        
         myLabel.text = self.detailScreenForModel?.title
         myLabelYear.text = "MOVİE YEAR : \(self.detailScreenForModel!.year!)"
-        /* NOT :
+        
+   
+       getImage()
+        
+        guard let movieDetail = detailScreenForModel else {return}
+        guard let url = movieDetail.poster else {return}
+       
+        myImageView.sd_setImage(with: URL(string:url))
+       
+    }
+    
+   /*  func fff(){
+        
+        let urlString4 = "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1"
+        
+        guard let url = URL(string: urlString4) else {return}
+        
+        self.dataTask = URLSession.shared.dataTask(with: url)
+        {
+            (data,response,error) in
+            
+           /* guard let data = data, error == nil else {return} */
+            
+            // Handle Error : HATA var mı kontrol ettik.
+            if let error = error {
+                
+                print("Veri Görevi ( DataTask ) hatası : \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = data  else{
+                print("Veri Boş.")
+                return
+            }
+            
+            do{
+                
+                DispatchQueue.main.async {
+               
+                    self.myImageView.sd_setImage(with:URL(string:urlString4)?.scheme)
+                    
+                }
+                
+            } catch{
+              print(error)
+            }
+         
+        }
+        dataTask?.resume()
+        
+        NOT :
          
          https://medium.com/swlh/loading-images-from-url-in-swift-2bf8b9db266
          BU ADRESTEN Api'deki bir resmi nasıl kendi ekranımızda görüntüleyeceğimizi ANLADIN. Böyle
          bir şeyle karşılaştığında bu adrese gidip hatırlayabilirsin.
          
          */
-        
-        // poster_path":"/mOX5O6JjCUWtlYp5D8wajuQRVgy.jpg
-        
-     
-    }
     
-    func getImageFromApi(from url:String) { // BU HALDE KALSIN SONRA İLERDE ÇALIŞAN KODLARI BU METOD ÜZERİNDE DEĞİŞTİRİRSİN ! ! !
-        
-        guard let comeImageUrl = URL(string: url) else {return}
-        
-        DispatchQueue.global().async {
-            
-            guard let myImageData = try? Data(contentsOf: comeImageUrl) else {return}
-            let myImage = UIImage(data: myImageData)
-            
-            DispatchQueue.main.async {
-                
-            
-                self.myImageView.image = myImage
-            }
-        }
-        
-        
-    } 
     
+    
+  
     private func setUpImageViewConstraint(){
  
         myImageView.widthAnchor.constraint(equalToConstant: 300).isActive = true
@@ -110,6 +143,25 @@ class DetailScreen: UIViewController {
         
     }
  
+    
+    func getImage() {
+        
+        let popularMoviesImageUrl = "https://api.themoviedb.org/3/images/A4j8S6moJS2zNtRR8oWF08gRnL5.jpg"
+        
+        let url = URL(string: popularMoviesImageUrl)!
+        
+        let dataTask = URLSession.shared.dataTask(with: url) {
+            (data,response,error) in
+            
+            if let data = data,let image = UIImage(data: data) {
+                
+               print("Belirlediğin filmin resim bilgisi doğru.")
+// /A4j8S6moJS2zNtRR8oWF08gRnL5.jpg
+            }
+            
+        }
+        
+    }
     
 
 }

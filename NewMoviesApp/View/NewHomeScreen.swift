@@ -6,17 +6,28 @@
 //
 
 import UIKit
+import SDWebImage
 
 class NewHomeScreen: UIViewController {
     
-    
+    private var dataTask : URLSessionDataTask?
     var isSearch = false
     var searchResultList = [MovieModel]()
     var movieDataList : [MovieModel] = []
-   
-   
-   
-    private var dataTask : URLSessionDataTask?
+    
+    var movieModel : MovieModel?
+    
+    
+    var newApiService = NewApiService()
+    var exampleKeyword:String?
+    
+    private let myImageView: UIImageView = {
+        let viewImage = UIImageView()
+        viewImage.translatesAutoresizingMaskIntoConstraints = false
+        //viewImage.image = UIImage()
+      
+        return viewImage
+    }()
   
     
     override func viewDidLoad() {
@@ -33,9 +44,11 @@ class NewHomeScreen: UIViewController {
          print(result)
          
          } */
+      
         
-        getMovies()
-       
+ 
+        
+        
         mySearchBar.delegate = self
         mytableView.delegate = self
         mytableView.dataSource = self
@@ -52,10 +65,64 @@ class NewHomeScreen: UIViewController {
         tableViewConstraint()
         searchBarConstraint()
         
+        getMovies(title: movieModel?.title ?? "Sen") {
+            
+           (movieModelList)  in
+            
+            print(" 1 KASIM ")
+            
+            if let m = self.movieModel {
+                
+                if let url = URL(string:"https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1" )
+                {
+                    
+                    DispatchQueue.main.async {
+                        let data = try? Data(contentsOf: url)
+                        
+                        DispatchQueue.main.async {
+                            self.myImageView.image = UIImage(data: data!)
+                        }
+                    }
+                }
+            }
+          
+            
+        }
+   
+     
         mytableView.reloadData()
         
     }
     
+   /* func requestRealize(keyword:String,page:Int){
+        
+        newApiService.getData(keyWords: keyword, page: page){
+            movieList in
+            
+      
+            if keyword != self.exampleKeyword {
+                self.mytableView.isHidden = true
+            }
+            
+            else {
+                self.mytableView.isHidden = false
+                self.movieDataList = movieList
+            }
+            
+          /*  if keyword != self.exampleKeyword && ((movieList.movies?.isEmpty) == nil) {
+                self.mytableView.isHidden = true
+                
+            }
+            else{
+                self.mytableView.isHidden = false
+                self.movieDataList = movieList.movies!
+            } */
+            
+            self.exampleKeyword = keyword
+        }
+                             
+        
+    } */
     
     private let mytableView : UITableView = {
         
@@ -116,7 +183,7 @@ class NewHomeScreen: UIViewController {
     }
     
     
-    private func getMovies( ) {
+    private func getMovies(title:String,completion: @escaping ( [MovieModel] ) -> Void ) {
         
         /*   apiService.getPopularMoviesData {
          
@@ -137,8 +204,10 @@ class NewHomeScreen: UIViewController {
          */
         
         let popularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=4e0be2c22f7268edffde97481d49064a&language=en-US&page=1"
-        
-        
+       
+   
+     //  let benimUrl = "http://www.omdbapi.com/?s=power&page=1&apikey=9893101c"
+                
         guard let url = URL(string: popularMoviesUrl) else {return}
         
         dataTask = URLSession.shared.dataTask(with: url)
@@ -159,6 +228,7 @@ class NewHomeScreen: UIViewController {
                 print ("Yanıt(CEVAP) BOŞ")
                 return
             }
+            
             print("Yanıt durum kodu : \(response.statusCode)")
             
             
@@ -173,9 +243,10 @@ class NewHomeScreen: UIViewController {
                 
                 let decoder = JSONDecoder()
                 let DataList = try decoder.decode(DataMovies.self, from: data)
-                self.movieDataList = DataList.movies!
                 
-              
+                self.movieDataList = DataList.movies
+                completion(self.movieDataList)
+                
                 
             } catch let error{
                 print(error)
@@ -187,6 +258,16 @@ class NewHomeScreen: UIViewController {
         dataTask?.resume()
         
     }
+    
+    private func setUpImageViewConstraint(){
+ 
+        myImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        myImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        myImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        myImageView.centerYAnchor.constraint(equalTo: view.topAnchor,constant: 25).isActive = true
+    }
+    
+    
     
 }
 
@@ -220,7 +301,7 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-       
+        
         //    return searchResultList.count
         
         if !searchBarIsEmpty() {
@@ -233,26 +314,32 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    
-         let cell = tableView.dequeueReusableCell(withIdentifier: MyTableViewCell.tableIdentifier, for: indexPath) as! MyTableViewCell
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: MyTableViewCell.tableIdentifier, for: indexPath) as! MyTableViewCell
         
         if !searchBarIsEmpty() {
             cell.movieTitleLabel.text = searchResultList[indexPath.row].title
         }
         else {
             cell.movieTitleLabel.text = movieDataList[indexPath.row].title
+            
+           
+            
+            
         }
-     
+        
         return cell
         
     }
     
     
+    
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         print("Tıkladım")
-       
-     // fetchDetail()
+        
+        // fetchDetail()
         
         let detailScreen = DetailScreen()
         
@@ -261,20 +348,22 @@ extension NewHomeScreen: UITableViewDataSource,UITableViewDelegate {
         }
         
         else {
+            
             detailScreen.detailScreenForModel = movieDataList[indexPath.row]
+            
         }
         
         self.navigationController?.pushViewController(detailScreen, animated: true)
         
-       
-   
+        
+        
         
     }
     
     
+    
+    
+    
 }
-
-
-
 
 

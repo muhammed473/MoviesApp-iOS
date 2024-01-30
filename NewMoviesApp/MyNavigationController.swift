@@ -10,6 +10,7 @@ import UIKit
 
 class MyNavigationController : UINavigationController {
     
+    var keyWords = ["war","war","good","money"]
     
     override func viewDidLoad() {
         
@@ -17,22 +18,25 @@ class MyNavigationController : UINavigationController {
         
     viewControllers = [SplashScreen()] // viewControllers Şuanda gezinen görünüm denetleyicileri
         
+       
+        
     }
     
     func goNewHomeScreen() {
         
-        let newhomeScreen = NewHomeScreen()
+       let newhomeScreen = NewHomeScreen()
        pushViewController(newhomeScreen, animated: true)
         
+       
         viewControllers.removeAll{
             $0 is SplashScreen
         }
     }
     
-    func goDetailScreen(model:MovieModel) {
+    func goDetailScreen(model:[MovieModel]) {
         
         let detailScreen = DetailScreen()
-        detailScreen.detailScreenForModel = model
+      //  detailScreen.detailScreenForModel = model.
         
         pushViewController(detailScreen, animated: true)
         
